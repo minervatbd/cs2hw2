@@ -23,10 +23,50 @@ public class TreasureCoordinates
         // get the parentheses out, dont need em
         digits = digits.substring(1, digits.length() - 1);
 
+        determineCoordinatesR(digits, coords, 1, digits.length());
+
         return coords;
     }
 
+    // recursive part of function
+    static void determineCoordinatesR(String inDigits, ArrayList<String> outCoords, int k, int n)
+    {
+        // end of recursive loop
+        if (k == n)
+            return;
+        else
+        {
+            // add a comma
+            insertStr(inDigits, ", ", k);
 
+            for (int i = 1; i <= k; i++)
+            {
+                if (i != k)
+                    insertStr(inDigits, ".", i);
+                
+                for (int j = k + 1; j <= n; j++)
+                {
+                    if (j != n)
+                        insertStr(inDigits, ".", j);
+
+                        if (isCoordValid(inDigits))
+                            outCoords.add(addParentheses(inDigits));
+
+                        removePt(inDigits, false);
+                }
+
+                if (i != k)
+                    removePt(inDigits, true);
+            }
+
+            // back track the comma
+            removeStr(inDigits, ", ");
+
+            // increment k
+            determineCoordinatesR(inDigits, outCoords, k + 1, n);
+        }
+        
+    }
 
     // checks if coordinate string is valid
     static boolean isCoordValid(String input)
