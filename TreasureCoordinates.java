@@ -31,36 +31,46 @@ public class TreasureCoordinates
     // recursive part of function
     static void determineCoordinatesR(String inDigits, ArrayList<String> outCoords, int k, int n)
     {
+        System.err.println(k);
         // end of recursive loop
         if (k == n)
             return;
         else
         {
             // add a comma
-            insertStr(inDigits, ", ", k);
+            //inDigits = insertStr(inDigits, ", ", k);
 
             for (int i = 1; i <= k; i++)
             {
-                if (i != k)
-                    insertStr(inDigits, ".", i);
+                //if (i != k)
+                //    inDigits = insertPt(inDigits, true, i);
+                int passi = i;
+                if (i == k)
+                    passi = -1;
                 
                 for (int j = k + 1; j <= n; j++)
                 {
-                    if (j != n)
-                        insertStr(inDigits, ".", j);
+                    //if (j != n - k)
+                    //    inDigits = insertPt(inDigits, false, j + k - 1);
+                    int passj = j;
+                    if (j == n)
+                        passj = -1;
 
-                        if (isCoordValid(inDigits))
-                            outCoords.add(addParentheses(inDigits));
+                    if (isCoordValid(inDigits))
+                        outCoords.add(addParentheses(insertPunc(inDigits, k, passi, passj)));
+                    
+                    System.out.println(addParentheses(insertPunc(inDigits, k, passi, passj)));
 
-                        removePt(inDigits, false);
+                    //if (j != n)
+                    //    inDigits = removePt(inDigits, false);
                 }
 
-                if (i != k)
-                    removePt(inDigits, true);
+                //if (i != k)
+                //    inDigits = removePt(inDigits, true);
             }
 
             // back track the comma
-            removeStr(inDigits, ", ");
+            //inDigits = removeStr(inDigits, ", ");
 
             // increment k
             determineCoordinatesR(inDigits, outCoords, k + 1, n);
@@ -81,33 +91,18 @@ public class TreasureCoordinates
         return "(" + input + ")";
     }
 
-    // remove ', '
-    static String removeStr(String input, String target)
+    static String insertPunc(String input, int comPos, int dotPos1, int dotPos2)
     {
-        return input.replaceAll(target, "");
-    }
+        if (dotPos1 == -1 && dotPos2 != -1)
+            return input.substring(0, comPos) + ", " + input.substring(comPos, dotPos2) + "." + input.substring(dotPos2);
 
-    // remove .
-    static String removeChar(String input, char target)
-    {
-        return input.replace(target, (char)0);
-    }
-
-    // remove specific point
-    static String removePt(String input, boolean firstHalf)
-    {
-        String[] inSplit = input.split(", ");
-
-        if (firstHalf)
-            return removeChar(inSplit[0], '.') + ", " + inSplit[1];
-    
+        else if (dotPos1 != -1 && dotPos2 == -1)
+            return input.substring(0, dotPos1) + "." + input.substring(dotPos1, comPos) + ", " + input.substring(comPos);
+        
+        else if (dotPos1 == -1 && dotPos2 == -1)
+            return input.substring(0, comPos) + ", " + input.substring(comPos);
+        
         else
-            return inSplit[0] + ", " + removeChar(inSplit[1], '.');
-    }
-
-    // insert . or ,
-    static String insertStr(String input, String newStr, int pos)
-    {
-        return input.substring(0, pos) + newStr + input.substring(pos, input.length());
+            return input.substring(0, dotPos1) + "." + input.substring(dotPos1, comPos) + ", " + input.substring(comPos, dotPos2) + "." + input.substring(dotPos2);
     }
 }
