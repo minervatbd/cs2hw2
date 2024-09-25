@@ -20,47 +20,48 @@ public class TreasureCoordinates
         // for returning later
         ArrayList<String> coords = new ArrayList<String>();
 
+        // used for staging coordinates for validity check
+        String currentCoord = "";
+
         // get the parentheses out, dont need em
         digits = digits.substring(1, digits.length() - 1);
 
-        determineCoordinatesR(digits, coords, 1, digits.length());
+        // first call recursive function
+        determineCoordinatesR(digits, currentCoord, coords, 1, digits.length(), 1, 1);
 
         return coords;
     }
 
     // recursive part of function
-    static void determineCoordinatesR(String inDigits, ArrayList<String> outCoords, int k, int n)
+    static void determineCoordinatesR(String inDigits, String currentCoord, ArrayList<String> outCoords, int k, int n, int x, int y)
     {
-        // end of recursive loop
+        // end of recursive loop; comma reached end
         if (k == n)
             return;
         
         else
         {
-            // first point position loop
-            for (int i = 1; i <= k; i++)
-            {
-                int dotPos1 = i;
+            // adds comma, periods
+            currentCoord = insertPunc(inDigits, k, x, y + k);
 
-                if (i == k)
-                    dotPos1 = -1;
-                
-                // second point position loop
-                for (int j = k + 1; j <= n; j++)
-                {
-                    int dotPos2 = j;
+            // add current coord to array if valid
+            if (isCoordValid(currentCoord))
+                outCoords.add(addParentheses(currentCoord));
+            
+            // reset variable
+            currentCoord = "";
 
-                    if (j == n)
-                        dotPos2 = -1;
-
-                    if (isCoordValid(insertPunc(inDigits, k, dotPos1, dotPos2)))
-                        outCoords.add(addParentheses(insertPunc(inDigits, k, dotPos1, dotPos2)));
-                    
-                }
-            } // end of loop, backtrack dot positions
-
-            // increment comma position
-            determineCoordinatesR(inDigits, outCoords, k + 1, n);
+            // if we need to iterate k, backtracking x and y
+            if (x == k && y == (n - k))
+                determineCoordinatesR(inDigits, currentCoord, outCoords, k + 1, n, 1, 1);
+            
+            // if we need to iterate x, backtracking y
+            else if (y == (n - k))
+                determineCoordinatesR(inDigits, currentCoord, outCoords, k, n, x + 1, 1);
+            
+            // otherwise just iterate y
+            else
+                determineCoordinatesR(inDigits, currentCoord, outCoords, k, n, x, y + 1);
         }
         
     }
@@ -68,14 +69,14 @@ public class TreasureCoordinates
     // checks if coordinate string is valid
     static boolean isCoordValid(String input)
     {
-
+        // split by comma
         String[] inSplit = input.split(", ");
 
+        // check both components individually
         for (int c = 0; c <= 1; c++)
         {
             if (inSplit[c].startsWith("0") && inSplit[c].length() > 1)
             {
-                System.out.println(inSplit[c].charAt(1) + " " + (inSplit[c].charAt(1) != '.'));
                 if (inSplit[c].charAt(1) != '.')
                     return false;
                 
@@ -97,9 +98,10 @@ public class TreasureCoordinates
     static String insertPunc(String input, int comPos, int dotPos1, int dotPos2)
     {
         String output = "";
+        int len = input.length();
         
         // add dot if needed
-        if (dotPos1 != -1)
+        if (dotPos1 != comPos)
             output += input.substring(0, dotPos1) + "." + input.substring(dotPos1, comPos);
         
         // or leave it out
@@ -110,7 +112,7 @@ public class TreasureCoordinates
         output += ", ";
         
         // add 2nd dot if needed
-        if (dotPos2 != -1)
+        if (dotPos2 != len)
             output += input.substring(comPos, dotPos2) + "." + input.substring(dotPos2);
         
         // or leave it out
