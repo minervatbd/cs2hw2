@@ -31,48 +31,35 @@ public class TreasureCoordinates
     // recursive part of function
     static void determineCoordinatesR(String inDigits, ArrayList<String> outCoords, int k, int n)
     {
-        System.err.println(k);
         // end of recursive loop
         if (k == n)
             return;
+        
         else
         {
-            // add a comma
-            //inDigits = insertStr(inDigits, ", ", k);
-
+            // first point position loop
             for (int i = 1; i <= k; i++)
             {
-                //if (i != k)
-                //    inDigits = insertPt(inDigits, true, i);
-                int passi = i;
+                int dotPos1 = i;
+
                 if (i == k)
-                    passi = -1;
+                    dotPos1 = -1;
                 
+                // second point position loop
                 for (int j = k + 1; j <= n; j++)
                 {
-                    //if (j != n - k)
-                    //    inDigits = insertPt(inDigits, false, j + k - 1);
-                    int passj = j;
+                    int dotPos2 = j;
+
                     if (j == n)
-                        passj = -1;
+                        dotPos2 = -1;
 
-                    if (isCoordValid(inDigits))
-                        outCoords.add(addParentheses(insertPunc(inDigits, k, passi, passj)));
+                    if (isCoordValid(insertPunc(inDigits, k, dotPos1, dotPos2)))
+                        outCoords.add(addParentheses(insertPunc(inDigits, k, dotPos1, dotPos2)));
                     
-                    System.out.println(addParentheses(insertPunc(inDigits, k, passi, passj)));
-
-                    //if (j != n)
-                    //    inDigits = removePt(inDigits, false);
                 }
+            } // end of loop, backtrack dot positions
 
-                //if (i != k)
-                //    inDigits = removePt(inDigits, true);
-            }
-
-            // back track the comma
-            //inDigits = removeStr(inDigits, ", ");
-
-            // increment k
+            // increment comma position
             determineCoordinatesR(inDigits, outCoords, k + 1, n);
         }
         
@@ -81,7 +68,23 @@ public class TreasureCoordinates
     // checks if coordinate string is valid
     static boolean isCoordValid(String input)
     {
-        // TODO
+
+        String[] inSplit = input.split(", ");
+
+        for (int c = 0; c <= 1; c++)
+        {
+            if (inSplit[c].startsWith("0") && inSplit[c].length() > 1)
+            {
+                System.out.println(inSplit[c].charAt(1) + " " + (inSplit[c].charAt(1) != '.'));
+                if (inSplit[c].charAt(1) != '.')
+                    return false;
+                
+                else if (inSplit[c].charAt(1) == '.' && inSplit[c].endsWith("0"))
+                    return false;
+
+            }
+        }
+
         return true;
     }
 
@@ -93,16 +96,27 @@ public class TreasureCoordinates
 
     static String insertPunc(String input, int comPos, int dotPos1, int dotPos2)
     {
-        if (dotPos1 == -1 && dotPos2 != -1)
-            return input.substring(0, comPos) + ", " + input.substring(comPos, dotPos2) + "." + input.substring(dotPos2);
-
-        else if (dotPos1 != -1 && dotPos2 == -1)
-            return input.substring(0, dotPos1) + "." + input.substring(dotPos1, comPos) + ", " + input.substring(comPos);
+        String output = "";
         
-        else if (dotPos1 == -1 && dotPos2 == -1)
-            return input.substring(0, comPos) + ", " + input.substring(comPos);
+        // add dot if needed
+        if (dotPos1 != -1)
+            output += input.substring(0, dotPos1) + "." + input.substring(dotPos1, comPos);
         
+        // or leave it out
         else
-            return input.substring(0, dotPos1) + "." + input.substring(dotPos1, comPos) + ", " + input.substring(comPos, dotPos2) + "." + input.substring(dotPos2);
+            output += input.substring(0, comPos);
+        
+        // always add comma
+        output += ", ";
+        
+        // add 2nd dot if needed
+        if (dotPos2 != -1)
+            output += input.substring(comPos, dotPos2) + "." + input.substring(dotPos2);
+        
+        // or leave it out
+        else
+            output += input.substring(comPos);
+
+        return output;
     }
 }
