@@ -4,8 +4,6 @@
  * Programming Assignment 1
  */
 
-// good ol treasure coords class
-
 import java.util.ArrayList;
 
 public class TreasureCoordinates
@@ -75,14 +73,16 @@ public class TreasureCoordinates
         // check both components individually
         for (int c = 0; c <= 1; c++)
         {
+            // 0 prefix cases will be the problem
             if (inSplit[c].startsWith("0") && inSplit[c].length() > 1)
             {
+                // if it isnt a decimal
                 if (inSplit[c].charAt(1) != '.')
                     return false;
                 
+                // decimals with superfluous 0s
                 else if (inSplit[c].charAt(1) == '.' && inSplit[c].endsWith("0"))
                     return false;
-
             }
         }
 
@@ -95,9 +95,12 @@ public class TreasureCoordinates
         return "(" + input + ")";
     }
 
+    // takes string, inserts comma and points where indicated
     static String insertPunc(String input, int comPos, int dotPos1, int dotPos2)
     {
         String output = "";
+
+        // need for 2nd comma check
         int len = input.length();
         
         // add dot if needed
