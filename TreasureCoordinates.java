@@ -1,7 +1,7 @@
 /* Mina Georgoudiou
  * Dr. Steinberg
  * COP3503 Fall 2024
- * Programming Assignment 1
+ * Programming Assignment 2
  */
 
 import java.util.ArrayList;
